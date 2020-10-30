@@ -5,7 +5,6 @@ import (
 )
 
 type (
-
 	Bundle struct {
 		Type    string
 		Source  string
@@ -14,12 +13,12 @@ type (
 	}
 
 	Bundler struct {
-		ID           string
-		Name         string
-		Version      string
-		Publisher    string
-		Description  string
-		Bundles      []Bundle
+		ID          string
+		Name        string
+		Version     string
+		Publisher   string
+		Description string
+		Bundles     []Bundle
 	}
 )
 

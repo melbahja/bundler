@@ -1,10 +1,9 @@
 package bundle
 
 import (
-	"os"
 	"fmt"
 	"io/ioutil"
-	"os/exec"
+	"os"
 )
 
 func msi(bundler Bundler, bundle Bundle) error {
@@ -30,12 +29,12 @@ func msi(bundler Bundler, bundle Bundle) error {
 	defer f.Close()
 
 	data := map[string]interface{}{
-		"ID": bundler.ID,
-		"GUID": guid,
-		"Name": bundler.Name,
-		"Version": bundler.Version,
-		"Source": bundle.Source,
-		"Publisher": bundler.Publisher,
+		"ID":          bundler.ID,
+		"GUID":        guid,
+		"Name":        bundler.Name,
+		"Version":     bundler.Version,
+		"Source":      bundle.Source,
+		"Publisher":   bundler.Publisher,
 		"Description": bundler.Description,
 	}
 
@@ -50,14 +49,4 @@ func msi(bundler Bundler, bundle Bundle) error {
 	}
 
 	return nil
-}
-
-
-func run(c string, args []string, env []string, dir string) ([]byte, error) {
-	cmd := exec.Command(c, args...)
-	cmd.Env = os.Environ()
-	if env != nil {
-		cmd.Env = append(cmd.Env, env...)
-	}
-	return cmd.CombinedOutput()
 }

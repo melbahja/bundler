@@ -1,12 +1,13 @@
 package bundle
 
-
 import (
 	"io"
+	"os"
+	"os/exec"
 	"text/template"
+
 	"github.com/google/uuid"
 )
-
 
 func option(bundle Bundle, key string, def string) string {
 	if v, ok := bundle.Options[key]; ok {
@@ -14,7 +15,6 @@ func option(bundle Bundle, key string, def string) string {
 	}
 	return def
 }
-
 
 func execTemplate(w io.Writer, templ string, data map[string]interface{}) error {
 
@@ -32,3 +32,11 @@ func execTemplate(w io.Writer, templ string, data map[string]interface{}) error 
 	return tmpl.Execute(w, data)
 }
 
+func run(c string, args []string, env []string, dir string) ([]byte, error) {
+	cmd := exec.Command(c, args...)
+	cmd.Env = os.Environ()
+	if env != nil {
+		cmd.Env = append(cmd.Env, env...)
+	}
+	return cmd.CombinedOutput()
+}

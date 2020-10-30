@@ -1,15 +1,14 @@
 package bundler_test
 
-
 import (
-	"os"
 	"fmt"
-	"testing"
+	"os"
 	"os/exec"
-	"gopkg.in/yaml.v2"
-	"github.com/melbahja/bundler/bundle"
-)
+	"testing"
 
+	"github.com/melbahja/bundler/bundle"
+	"gopkg.in/yaml.v2"
+)
 
 var (
 	bundlerFileData = []byte(`
@@ -27,7 +26,6 @@ bundles:
       wixfile: app.wxs
 `)
 )
-
 
 func TestBundleMSI(t *testing.T) {
 
@@ -55,9 +53,8 @@ func build(id, gos, outDir string) error {
 		o += ".exe"
 	}
 
-	cmd        := exec.Command("go", "build", "-o", o, "../main.go")
-	cmd.Env    = append(os.Environ(), fmt.Sprintf("GOOS=%s", gos))
+	cmd := exec.Command("go", "build", "-o", o, "../main.go")
+	cmd.Env = append(os.Environ(), fmt.Sprintf("GOOS=%s", gos))
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
 }
-

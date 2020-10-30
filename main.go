@@ -1,14 +1,13 @@
 package main
 
 import (
-	"log"
 	"flag"
 	"io/ioutil"
+	"log"
 
-	"gopkg.in/yaml.v2"
 	"github.com/melbahja/bundler/bundle"
+	"gopkg.in/yaml.v2"
 )
-
 
 var (
 	cfg = flag.String("config", "bundler.yaml", "Bundler config file.")
