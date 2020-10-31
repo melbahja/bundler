@@ -15,6 +15,7 @@ type (
 	Bundler struct {
 		ID          string
 		Name        string
+		Data        map[string]interface{}
 		Version     string
 		Publisher   string
 		Description string

@@ -38,6 +38,10 @@ func msi(bundler Bundler, bundle Bundle) error {
 		"Description": bundler.Description,
 	}
 
+	for i, v := range bundler.Data {
+		data[i] = v
+	}
+
 	if err = execTemplate(f, string(cfgData), data); err != nil {
 		return err
 	}
