@@ -4,15 +4,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
 func msi(bundler Bundler, bundle Bundle) error {
 
-	cfg, guid := option(bundle, "wixfile", "app.wxs"), option(bundle, "guid", "")
-
-	if cfg == "" {
-		return fmt.Errorf("could not find msi wixfile option.")
-	} else if guid == "" {
+	cfg, guid := option(bundle, "template", "app.wxs"), option(bundle, "guid", "")
+	if guid == "" {
 		return fmt.Errorf("could not find msi guid option.")
 	}
 
@@ -30,6 +28,7 @@ func msi(bundler Bundler, bundle Bundle) error {
 
 	data := map[string]interface{}{
 		"ID":          bundler.ID,
+		"Ver":         strings.TrimPrefix(bundler.Version, "v"),
 		"GUID":        guid,
 		"Name":        bundler.Name,
 		"Version":     bundler.Version,
