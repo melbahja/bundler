@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strings"
 	"runtime"
+	"strings"
 )
 
 func msi(bundler Bundler, bundle Bundle) error {
@@ -20,7 +20,8 @@ func msi(bundler Bundler, bundle Bundle) error {
 		return err
 	}
 
-	f, err := os.Create(fmt.Sprintf("tmp_bundler_%s", cfg))
+	// TODO: create this is tmp dir.
+	f, err := os.Create(fmt.Sprintf("tmp%s.wxs", bundler.ID))
 	if err != nil {
 		return err
 	}
@@ -46,25 +47,32 @@ func msi(bundler Bundler, bundle Bundle) error {
 		return err
 	}
 
+	// Fix for windows wix!!!!
+	f.Close()
+
 	if runtime.GOOS == "windows" {
 
-		wixBin := option(bundle, "bindir", "c:\\Program Files (x86)\\Wix Toolset v3.11\\bin")
-		if out, err := run(fmt.Sprintf("%s\\candle", wixBin), []string{f.Name()}, nil, bundle.Source); err != nil {
-			return fmt.Errorf("wix error: %s", string(out))
+		wixBin := option(bundle, "bindir", "c:\\Program Files (x86)\\Wix Toolset v3.11\\bin\\")
+		if err = run(fmt.Sprintf("%s\\candle", wixBin), []string{f.Name()}, nil, bundle.Source); err != nil {
+			return fmt.Errorf("wix candle error: %s", err)
 		}
 
-		_, err := run(
-			fmt.Sprintf("%s\\light", wixBin),
-			[]string{"-ext", "WixUIExtension", "-cultures:en-us", "-out", bundle.Output, fmt.Sprintf("%s.wixobj", bundler.ID)},
+		err = run(
+			fmt.Sprintf("%slight", wixBin),
+			[]string{"-ext", "WixUIExtension", "-cultures:en-us", "-out", bundle.Output, fmt.Sprintf("tmp%s.wixobj", bundler.ID)},
 			nil,
 			bundle.Source,
-		);
+		)
 
-		return err
+		if err != nil {
+			return fmt.Errorf("wix light error: %s", err)
+		}
+
+		return nil
 	}
 
-	if out, err := run("wixl", []string{"-o", bundle.Output, f.Name()}, nil, bundle.Source); err != nil {
-		return fmt.Errorf("wix error: %s", string(out))
+	if err := run("wixl", []string{"-o", bundle.Output, f.Name()}, nil, bundle.Source); err != nil {
+		return fmt.Errorf("wix error: %s", err)
 	}
 
 	return nil

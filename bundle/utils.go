@@ -9,6 +9,11 @@ import (
 	"github.com/google/uuid"
 )
 
+var (
+	Stdout = os.Stdout
+	Stderr = os.Stderr
+)
+
 func option(bundle Bundle, key string, def string) string {
 	if v, ok := bundle.Options[key]; ok {
 		return v
@@ -32,11 +37,13 @@ func execTemplate(w io.Writer, templ string, data map[string]interface{}) error 
 	return tmpl.Execute(w, data)
 }
 
-func run(c string, args []string, env []string, dir string) ([]byte, error) {
+func run(c string, args []string, env []string, dir string) error {
 	cmd := exec.Command(c, args...)
 	cmd.Env = os.Environ()
+	cmd.Stderr = Stderr
+	cmd.Stdout = Stdout
 	if env != nil {
 		cmd.Env = append(cmd.Env, env...)
 	}
-	return cmd.CombinedOutput()
+	return cmd.Run()
 }
