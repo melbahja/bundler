@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+	"runtime"
 )
 
 func msi(bundler Bundler, bundle Bundle) error {
@@ -45,7 +46,22 @@ func msi(bundler Bundler, bundle Bundle) error {
 		return err
 	}
 
-	// TODO: change cmd name on windows.
+	if runtime.GOOS == "windows" {
+
+		wixBin := option(bundle, "bindir", "c:\\Program Files (x86)\\Wix Toolset v3.11\\bin")
+		if out, err := run(fmt.Sprintf("%s\\candle", wixBin), []string{f.Name()}, nil, bundle.Source); err != nil {
+			return fmt.Errorf("wix error: %s", string(out))
+		}
+
+		_, err := run(
+			fmt.Sprintf("%s\\light", wixBin),
+			[]string{"-ext", "WixUIExtension", "-cultures:en-us", "-out", bundle.Output, fmt.Sprintf("%s.wixobj", bundler.ID)},
+			nil,
+			bundle.Source,
+		);
+
+		return err
+	}
 
 	if out, err := run("wixl", []string{"-o", bundle.Output, f.Name()}, nil, bundle.Source); err != nil {
 		return fmt.Errorf("wix error: %s", string(out))
